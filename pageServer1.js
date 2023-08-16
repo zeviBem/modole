@@ -17,6 +17,20 @@ const app = express()
 const port = 4000
 app.use(express.json())
 
+const bcryptjs = require('bcryptjs');
+const salt = 3;
+function hashForPass(pass) {
+    let hash = bcryptjs.hashSync(pass,salt);
+    return hash
+}
+
+users.forEach(element => {
+    element.password = hashForPass(element.password)
+    console.log(element.email + " " + element.password)
+})
+
+
+
 app.get('/', (req, res) => {
     res.send(users)
 })
@@ -36,7 +50,7 @@ app.post('/users', (req, res) => {
 
     const newUser = { id: createId(),
                       name: req.body.name,
-                     password: req.body.password
+                     password: hashForPass(req.body.password)  
                     }
     console.log(newUser)
     users.push(newUser)
@@ -74,20 +88,21 @@ app.delete('/users/:id', (req, res) => {
     }
 })
 
-app.post("/users//", (req, res) => {
+app.post("/search", (req, res) => {
     const userEmail = req.body.email;
     const userPas = req.body.password;
-    let answer = false
-    users.forEach(element => {
-        if ((element.email == userEmail) & (element.password == userPas)) {
-            res.send('ERROR!! this user its create before you!')
-            answer = true
-        }
-    })
-    if (!answer) {
+
+    const user1 = users.find((element) => element.email === userEmail && bcryptjs.compareSync(userPas, element.password))
+    if (user1) {
         res.send('this is correct!')
     }
-})
+    else {
+        res.send("its wrong!")
+    }
+           
+});
+
+
 
 
 
