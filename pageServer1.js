@@ -103,6 +103,18 @@ app.post("/search", (req, res) => {
 });
 
 
+const validator = require('validator')
+app.post('/testEmail', (req, res)  => {
+    const userEmail = req.body.email;
+    console.log(userEmail)
+    // const checkEmail = users.find((element) => validator.isEmail(userEmail));
+    if (validator.isEmail(userEmail)) {
+        res.send('its a good email!')
+    }
+    else {
+        res.send('ERROR!! its un correct email ')
+    }
+})
 
 
 
